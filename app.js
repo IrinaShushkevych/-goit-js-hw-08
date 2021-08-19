@@ -66,27 +66,27 @@ const galleryItems = [
 const galary = document.querySelector('ul.js-gallery')
 const modal = document.querySelector('.js-lightbox')
 const modalImg = modal.querySelector('img.lightbox__image')
-const modalBtnClose = modal.querySelector(
-  'button[data-action="close-lightbox"]',
-)
-const modalOverlay = modal.querySelector('.lightbox__overlay')
 
 galary.insertAdjacentHTML('afterbegin', createGalaryItem(galleryItems))
 galary.addEventListener('click', onClickGalaryItem)
 
-// modalBtnClose.addEventListener('click', closeModal)
-// modalOverlay.addEventListener('click', closeModal)
 modal.addEventListener('click', (e) => {
   console.log(e.target)
   if (
     e.target.classList.contains('lightbox__overlay') ||
-    e.target === modalBtnClose
+    e.target.dataset.action === 'close-lightbox'
   )
     closeModal()
-  if (e.target.classList.contains('lightbox__image')) nextImg()
+  if (
+    e.target.classList.contains('lightbox__image') ||
+    e.target.dataset.type === 'next'
+  )
+    nextImg()
+  if (e.target.dataset.type === 'prev') prevImg()
 })
 
 window.addEventListener('keydown', (e) => {
+  if (!modal.classList.contains('is-open')) return
   switch (e.code) {
     case 'Escape':
       closeModal()
