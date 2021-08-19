@@ -74,13 +74,19 @@ const modalOverlay = modal.querySelector('.lightbox__overlay')
 galary.insertAdjacentHTML('afterbegin', createGalaryItem(galleryItems))
 galary.addEventListener('click', onClickGalaryItem)
 
-modalBtnClose.addEventListener('click', closeModal)
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeModal()
+// modalBtnClose.addEventListener('click', closeModal)
+// modalOverlay.addEventListener('click', closeModal)
+modal.addEventListener('click', (e) => {
+  console.log(e.target)
+  if (
+    e.target.classList.contains('lightbox__overlay') ||
+    e.target === modalBtnClose
+  )
+    closeModal()
+  if (e.target.classList.contains('lightbox__image')) nextImg()
 })
 
 window.addEventListener('keydown', (e) => {
-  console.log(e.code)
   switch (e.code) {
     case 'Escape':
       closeModal()
@@ -117,22 +123,19 @@ function createGalaryItem(items) {
 function onClickGalaryItem(e) {
   if (!e.target.classList.contains('gallery__image')) return
   e.preventDefault()
-  console.log(e.target)
-  console.log(e.target.dataset.source)
   modal.classList.add('is-open')
-  setModalImgSrc(e.target.dataset.source, e.target.getAttribute('alt'))
+  setModalImgSrc(e.target.dataset.source, e.target.alt)
 }
 
 function setModalImgSrc(src, alt) {
-  modalImg.setAttribute('src', src)
-  modalImg.setAttribute('alt', alt)
+  modalImg.src = src
+  modalImg.alt = alt
 }
 
 function findIndexImgInObject(src) {
   return galleryItems.indexOf(galleryItems.find((el) => el.original === src))
-  // if (currentImgIndex === galleryItems.length - 1) return 0
-  // return idx
 }
+
 function nextImg() {
   let currentImgIndex = findIndexImgInObject(modalImg.getAttribute('src'))
   if (currentImgIndex === galleryItems.length - 1) currentImgIndex = -1
