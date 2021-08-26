@@ -62,48 +62,33 @@ const galleryItems = [
       'https://cdn.pixabay.com/photo/2019/05/17/04/35/lighthouse-4208843_1280.jpg',
     description: 'Lighthouse Coast Sea',
   },
-]
-const galary = document.querySelector('ul.js-gallery')
-const modal = document.querySelector('.js-lightbox')
-const modalImg = modal.querySelector('img.lightbox__image')
+];
+const galary = document.querySelector('ul.js-gallery');
+const modal = document.querySelector('.js-lightbox');
+const modalImg = modal.querySelector('img.lightbox__image');
 
-galary.insertAdjacentHTML('afterbegin', createGalaryItem(galleryItems))
-galary.addEventListener('click', onClickGalaryItem)
+galary.insertAdjacentHTML('afterbegin', createGalaryItem(galleryItems));
+galary.addEventListener('click', onClickGalaryItem);
 
-modal.addEventListener('click', (e) => {
-  console.log(e.target)
+modal.addEventListener('click', e => {
+  console.log(e.target);
   if (
     e.target.classList.contains('lightbox__overlay') ||
     e.target.dataset.action === 'close-lightbox'
   )
-    closeModal()
+    closeModal();
   if (
     e.target.classList.contains('lightbox__image') ||
     e.target.dataset.type === 'next'
   )
-    nextImg()
-  if (e.target.dataset.type === 'prev') prevImg()
-})
-
-window.addEventListener('keydown', (e) => {
-  if (!modal.classList.contains('is-open')) return
-  switch (e.code) {
-    case 'Escape':
-      closeModal()
-      break
-    case 'ArrowLeft':
-      prevImg()
-      break
-    case 'ArrowRight':
-      nextImg()
-      break
-  }
-})
+    nextImg();
+  if (e.target.dataset.type === 'prev') prevImg();
+});
 
 function createGalaryItem(items) {
   return items
     .map(
-      (el) => `<li class="gallery__item">
+      el => `<li class="gallery__item">
   <a
     class="gallery__link"
     href="${el.preview}"
@@ -117,44 +102,62 @@ function createGalaryItem(items) {
   </a>
 </li>`,
     )
-    .join('')
+    .join('');
 }
 
 function onClickGalaryItem(e) {
-  if (!e.target.classList.contains('gallery__image')) return
-  e.preventDefault()
-  modal.classList.add('is-open')
-  setModalImgSrc(e.target.dataset.source, e.target.alt)
+  if (!e.target.classList.contains('gallery__image')) return;
+  e.preventDefault();
+  modal.classList.add('is-open');
+  setModalImgSrc(e.target.dataset.source, e.target.alt);
+  window.addEventListener('keydown', onKeyDown);
 }
 
 function setModalImgSrc(src, alt) {
-  modalImg.src = src
-  modalImg.alt = alt
+  modalImg.src = src;
+  modalImg.alt = alt;
 }
 
 function findIndexImgInObject(src) {
-  return galleryItems.indexOf(galleryItems.find((el) => el.original === src))
+  return galleryItems.indexOf(galleryItems.find(el => el.original === src));
 }
 
 function nextImg() {
-  let currentImgIndex = findIndexImgInObject(modalImg.getAttribute('src'))
-  if (currentImgIndex === galleryItems.length - 1) currentImgIndex = -1
+  let currentImgIndex = findIndexImgInObject(modalImg.getAttribute('src'));
+  if (currentImgIndex === galleryItems.length - 1) currentImgIndex = -1;
   setModalImgSrc(
     galleryItems[currentImgIndex + 1].original,
     galleryItems[currentImgIndex + 1].description,
-  )
+  );
 }
 
 function prevImg() {
-  let currentImgIndex = findIndexImgInObject(modalImg.getAttribute('src'))
-  if (currentImgIndex == 0) currentImgIndex = galleryItems.length
+  let currentImgIndex = findIndexImgInObject(modalImg.getAttribute('src'));
+  if (currentImgIndex == 0) currentImgIndex = galleryItems.length;
   setModalImgSrc(
     galleryItems[currentImgIndex - 1].original,
     galleryItems[currentImgIndex - 1].description,
-  )
+  );
 }
 
 function closeModal(e) {
-  modal.classList.remove('is-open')
-  setModalImgSrc('', '')
+  modal.classList.remove('is-open');
+  setModalImgSrc('', '');
+
+  window.removeEventListener('keydown', onKeyDown);
+}
+
+function onKeyDown(e) {
+  if (!modal.classList.contains('is-open')) return;
+  switch (e.code) {
+    case 'Escape':
+      closeModal();
+      break;
+    case 'ArrowLeft':
+      prevImg();
+      break;
+    case 'ArrowRight':
+      nextImg();
+      break;
+  }
 }
